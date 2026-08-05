@@ -1,122 +1,269 @@
 import 'package:flutter/material.dart';
 
-void main() {
+//a função main() e a porta de entrada do app
+void main(){
+  //coloca o app flutter para rodar
   runApp(const MyApp());
 }
-
-class MyApp extends StatelessWidget {
+// significa q a classe está herdando as características de um StatelessWidget
+class MyApp extends StatelessWidget{
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context){
     return MaterialApp(
-      title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: .fromSeed(seedColor: Colors.deepPurple),
+        colorSchemeSeed: Colors.blue,
+        useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+    home: MediaEscolarPage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+class MediaEscolarPage extends StatefulWidget{
+  const MediaEscolarPage({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<MediaEscolarPage> createState() => _MediaEscolarPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
 
-  void _incrementCounter() {
+class _MediaEscolarPageState extends State<MediaEscolarPage>{
+
+  final TextEditingController nomeController = TextEditingController();
+  final TextEditingController nota1Controller = TextEditingController();
+  final TextEditingController nota2Controller = TextEditingController();
+  final TextEditingController nota3Controller = TextEditingController();
+
+  String nomeAluno = '';
+  String situacao = '';
+  double media = 0;
+
+  void calcularMedia(){
+    String nome = nomeController.text.trim();
+
+    double? nota1 = double.tryParse(
+      nota1Controller.text.replaceAll(',', '.')
+    );
+    double? nota2 = double.tryParse(
+      nota2Controller.text.replaceAll(',', '.')
+    );
+    double? nota3 = double.tryParse(
+      nota3Controller.text.replaceAll(',', '.')
+    );
+
+    if(nome.isEmpty || nota1 == null || nota2 == null || nota3 == null ){
+      mostrarMensagem("Preencha todos os campos corretamente");
+      return;
+    }
+
+    if(nota1 < 0  ||
+       nota1 > 10 ||
+       nota1 < 0  ||
+       nota1 > 10 ||
+       nota1 < 0  ||
+       nota1 > 10 
+      ){
+        mostrarMensagem("As notas devem estar entre 0 e 10");
+        return;
+      }
+
+      double mediaCalculada = (nota1 + nota2 + nota3) /3;
+
+      String situacaoCalculada;
+
+      if(mediaCalculada>=7){
+        situacaoCalculada = "APROVADO";
+      }else if (mediaCalculada >=5){
+        situacaoCalculada = "RECUPERAÇÃO";
+      }else{
+        situacaoCalculada = "REPROVADO";
+      }
+
+      setState(() {
+        nomeAluno = nome;
+        media = mediaCalculada;
+        situacao = situacaoCalculada;
+      });
+
+  }
+
+  void mostrarMensagem(String mensagem){
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(mensagem)),
+      );
+  }
+
+  void limparCampos(){
+    nomeController.clear();
+    nota1Controller.clear();
+    nota2Controller.clear();
+    nota3Controller.clear();
+
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+        nomeAluno = '';
+        media = 0;
+        situacao = '';
+      });
+  }
+
+  IconData escolherIcone(){
+    if(situacao == "APROVADO"){
+      return Icons.check_circle;
+    }
+    if(situacao == "RECUPERAÇÃO"){
+      return Icons.warning;
+    }
+      return Icons.cancel;
   }
 
   @override
-  Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+  Widget build(BuildContext context){
     return Scaffold(
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: const Text('Calculadora de Média'),
+        centerTitle: true,
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(20),
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: .center,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+            const Icon(Icons.school, size: 80, color: Colors.grey),
+            const SizedBox(height: 10),
+            const Text(
+              'Média Escolar',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
             ),
+            const SizedBox(height: 10),
+            const Text(
+              'Digite o nome do aluno e suas notas para calcular a média.',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              controller: nomeController,
+              decoration: const InputDecoration(
+                labelText: 'Nome do Aluno',
+                icon: Icon(Icons.person),
+                border: OutlineInputBorder(
+                  
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                ),
+              ),
+            ),
+            const SizedBox(height: 15),
+            TextField(
+              controller: nota1Controller,
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true
+              ),
+              decoration: const InputDecoration(
+                labelText: 'Nota 1',
+                hintText: 'Digite uma nota de 0 a 10',
+                prefixIcon: Icon(Icons.edit),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                ),
+              ),
+            ),
+            const SizedBox(height: 15),
+            TextField(
+              controller: nota2Controller,
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true
+              ),
+              decoration: const InputDecoration(
+                labelText: 'Nota 2',
+                hintText: 'Digite uma nota de 0 a 10',
+                prefixIcon: Icon(Icons.edit),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                ),
+              ),
+            ),
+            const SizedBox(height: 15),
+            TextField(
+              controller: nota3Controller,
+              keyboardType: const TextInputType.numberWithOptions(),
+              decoration: const InputDecoration(
+                labelText: 'Nota 3',
+                hintText: 'Digite uma nota de 0 a 10',
+                prefixIcon: Icon(Icons.edit),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            ElevatedButton.icon(
+              onPressed: calcularMedia,
+              icon: const Icon(Icons.calculate),
+              label: const Text('Calcular Média')
+            ),
+
+            const SizedBox(height: 10,),
+
+            OutlinedButton.icon(
+              onPressed: limparCampos,
+              icon: const Icon(Icons.delete),
+              label: const Text("Limpar")
+            ),
+
+            const SizedBox(height: 25),
+
+
+            if(situacao.isNotEmpty)
+                Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      children: [
+
+                        Icon(
+                          escolherIcone(),
+                          size: 60,
+                        ),
+                        Text(
+                          nomeAluno,
+                          style: const TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+
+                        Text(
+                          'Média: ${media.toStringAsFixed(1)}',
+                          style: const TextStyle(
+                            fontSize: 20
+                          ),
+                        ),
+
+                        const SizedBox(height: 10,),
+
+                        Text(
+                          situacao,
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold
+                          ),
+                        ),
+
+                      ],
+                    ),
+                    ),
+            )
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
+       )
     );
   }
 }
