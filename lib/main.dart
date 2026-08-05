@@ -36,6 +36,7 @@ class _MediaEscolarPageState extends State<MediaEscolarPage>{
   final TextEditingController nota1Controller = TextEditingController();
   final TextEditingController nota2Controller = TextEditingController();
   final TextEditingController nota3Controller = TextEditingController();
+  final TextEditingController nota4Controller = TextEditingController();
 
   String nomeAluno = '';
   String situacao = '';
@@ -53,8 +54,11 @@ class _MediaEscolarPageState extends State<MediaEscolarPage>{
     double? nota3 = double.tryParse(
       nota3Controller.text.replaceAll(',', '.')
     );
+    double? nota4 = double.tryParse(
+      nota4Controller.text.replaceAll(',', '.')
+    );
 
-    if(nome.isEmpty || nota1 == null || nota2 == null || nota3 == null ){
+    if(nome.isEmpty || nota1 == null || nota2 == null || nota3 == null || nota4 == null){
       mostrarMensagem("Preencha todos os campos corretamente");
       return;
     }
@@ -70,7 +74,7 @@ class _MediaEscolarPageState extends State<MediaEscolarPage>{
         return;
       }
 
-      double mediaCalculada = (nota1 + nota2 + nota3) /3;
+      double mediaCalculada = (nota1 + nota2 + nota3 + nota4) /4;
 
       String situacaoCalculada;
 
@@ -102,6 +106,8 @@ class _MediaEscolarPageState extends State<MediaEscolarPage>{
     nota1Controller.clear();
     nota2Controller.clear();
     nota3Controller.clear();
+    nota4Controller.clear();
+
 
     setState(() {
         nomeAluno = '';
@@ -148,9 +154,12 @@ class _MediaEscolarPageState extends State<MediaEscolarPage>{
             const SizedBox(height: 20),
             TextField(
               controller: nomeController,
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true
+              ),
               decoration: const InputDecoration(
                 labelText: 'Nome do Aluno',
-                icon: Icon(Icons.person),
+                prefixIcon: Icon(Icons.person),
                 border: OutlineInputBorder(
                   
                   borderRadius: BorderRadius.all(Radius.circular(20)),
@@ -193,6 +202,19 @@ class _MediaEscolarPageState extends State<MediaEscolarPage>{
               keyboardType: const TextInputType.numberWithOptions(),
               decoration: const InputDecoration(
                 labelText: 'Nota 3',
+                hintText: 'Digite uma nota de 0 a 10',
+                prefixIcon: Icon(Icons.edit),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                ),
+              ),
+            ),
+            const SizedBox(height: 15),
+            TextField(
+              controller: nota4Controller,
+              keyboardType: const TextInputType.numberWithOptions(),
+              decoration: const InputDecoration(
+                labelText: 'Nota 4',
                 hintText: 'Digite uma nota de 0 a 10',
                 prefixIcon: Icon(Icons.edit),
                 border: OutlineInputBorder(

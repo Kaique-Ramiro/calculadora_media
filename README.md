@@ -63,7 +63,7 @@ Execute o projeto:
 
 ### Desafio
 
-- [ ] Adicionar uma quarta nota
+- [X] Adicionar uma quarta nota
 - [ ] Mostrar a maior nota
 - [ ] Mostrar a menor nota
 - [ ] Informar  quantos pontos faltaram para aprovação
